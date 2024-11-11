@@ -27,46 +27,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Skapa en lista för varje dag
             const listItem = document.createElement('li');
-            listItem.innerHTML = `
-                ${dayName} (${dateStr}): <span class="muscle-group">${muscleGroup}</span>
-                <button class="edit-button">Redigera</button>
-            `;
-            // Lägg till "Redigera" knapp till listan
+            listItem.innerHTML = `${dayName} (${dateStr}): <span class="muscle-group">${muscleGroup}</span>`;
+
+            // Kontrollera om det är dagens datum och om så, lägg till en redigeringsknapp
+            if (i === 0) { // Om det är dagens datum
+                listItem.innerHTML += `<button class="edit-button">Redigera</button>`;
+            }
+
+            // Lägg till listitem till träningslistan
             trainingList.appendChild(listItem);
 
-            // Lägg till eventlyssnare för att kunna redigera
-            const editButton = listItem.querySelector('.edit-button');
-            editButton.addEventListener('click', function() {
-                const muscleGroupSpan = listItem.querySelector('.muscle-group');
-                const currentMuscleGroup = muscleGroupSpan.textContent;
+            // Lägg till eventlyssnare för att kunna redigera, endast för dagens pass
+            if (i === 0) { // Endast för dagens pass
+                const editButton = listItem.querySelector('.edit-button');
+                editButton.addEventListener('click', function() {
+                    const muscleGroupSpan = listItem.querySelector('.muscle-group');
+                    const currentMuscleGroup = muscleGroupSpan.textContent;
 
-                // Sätt inputfältet till den nuvarande muskelgruppen
-                muscleGroupInput.value = currentMuscleGroup;
+                    // Sätt inputfältet till den nuvarande muskelgruppen
+                    muscleGroupInput.value = currentMuscleGroup;
 
-                // Ta bort det gamla träningspasset från listan
-                trainingData = trainingData.filter(t => t.date !== dateStr);
+                    // Ta bort det gamla träningspasset från listan
+                    trainingData = trainingData.filter(t => t.date !== dateStr);
 
-                // Uppdatera listan när användaren klickar på "Spara Träning"
-                saveButton.onclick = function() {
-                    const newMuscleGroup = muscleGroupInput.value.trim();
+                    // Uppdatera listan när användaren klickar på "Spara Träning"
+                    saveButton.onclick = function() {
+                        const newMuscleGroup = muscleGroupInput.value.trim();
+                        if (!newMuscleGroup) {
+                            alert('Ange en muskelgrupp');
+                            return;
+                        }
 
+                        // Lägg till den nya muskelgruppen i träningsdata
+                        trainingData.push({ date: dateStr, muscleGroup: newMuscleGroup });
+                        
+                        // Begränsa listan till 14 dagar
+                        if (trainingData.length > 14) {
+                            trainingData.shift();
+                        }
 
-                    // Lägg till den nya muskelgruppen i träningsdata
-                    trainingData.push({ date: dateStr, muscleGroup: newMuscleGroup });
-                    
-                    // Begränsa listan till 14 dagar
-                    if (trainingData.length > 14) {
-                        trainingData.shift();
-                    }
+                        // Spara i localStorage
+                        localStorage.setItem('trainingData', JSON.stringify(trainingData));
 
-                    // Spara i localStorage
-                    localStorage.setItem('trainingData', JSON.stringify(trainingData));
-
-                    // Rensa inputfältet och uppdatera listan
-                    muscleGroupInput.value = '';
-                    updateTrainingList();
-                };
-            });
+                        // Rensa inputfältet och uppdatera listan
+                        muscleGroupInput.value = '';
+                        updateTrainingList();
+                    };
+                });
+            }
         }
     }
 
