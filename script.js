@@ -49,10 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Uppdatera listan när användaren klickar på "Spara Träning"
                 saveButton.onclick = function() {
                     const newMuscleGroup = muscleGroupInput.value.trim();
-                    if (!newMuscleGroup) {
-                        alert('Ange en muskelgrupp');
-                        return;
-                    }
+
 
                     // Lägg till den nya muskelgruppen i träningsdata
                     trainingData.push({ date: dateStr, muscleGroup: newMuscleGroup });
@@ -76,10 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Spara träningspass
     saveButton.addEventListener('click', function() {
         const muscleGroup = muscleGroupInput.value.trim();
-        if (!muscleGroup) {
-            alert('Ange en muskelgrupp');
-            return;
-        }
 
         const currentDate = new Date();
         const dateStr = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
