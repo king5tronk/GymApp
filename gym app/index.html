@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gym App - Dagens Träning</h1>
+        
+        <!-- Input för att lägga till muskelgrupp -->
+        <div class="input-section">
+            <input type="text" id="muscle-group" placeholder="Ange muskelgrupp" />
+            <button id="save-button">Spara Träning</button>
+        </div>
+        
+        <!-- Lista som visar träningspass för de senaste 14 dagarna -->
+        <div class="weekdays">
+            <ul id="training-list">
+                <!-- Dynamiskt fylld lista här -->
+            </ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
