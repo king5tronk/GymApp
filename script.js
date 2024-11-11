@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
             date.setDate(currentDate.getDate() - i);
 
             const dayName = weekdays[date.getDay() - 1] || 'Söndag';
-            // Ändra här för att visa dag, månad och år i rätt ordning
             const dateStr = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
 
             const training = trainingData.find(t => t.date === dateStr);
@@ -53,10 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Uppdatera listan när användaren klickar på "Spara Träning"
                     saveButton.onclick = function() {
                         const newMuscleGroup = muscleGroupInput.value.trim();
-                        if (!newMuscleGroup) {
-                            alert('Ange en muskelgrupp');
-                            return;
-                        }
+
 
                         // Lägg till den nya muskelgruppen i träningsdata
                         trainingData.push({ date: dateStr, muscleGroup: newMuscleGroup });
@@ -74,6 +70,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         updateTrainingList();
                     };
                 });
+            }
+
+            // Lägg till separator (linje) för att visa veckoseparation efter söndag
+            if (dayName === 'Måndag') {
+                const separator = document.createElement('hr');
+                trainingList.appendChild(separator);
             }
         }
     }

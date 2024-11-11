@@ -78,3 +78,13 @@ h1 {
 .muscle-group {
     font-weight: bold;
 }
+.sunday {
+    background-color: #ffdddd; /* Ljus rödaktig ton */
+    color: #ca3535; /* Mörkare röd för texten */
+}
+hr {
+    border: 1px solid #ccc;
+    margin: 15px 0;
+    width: 100%;
+}
+
