@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const dateStr = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
 
             const training = trainingData.find(t => t.date === dateStr);
-            const muscleGroup = training ? training.muscleGroup : 'Ingen träningspass';
+            const muscleGroup = training ? training.muscleGroup : '--';
 
             // Skapa en lista för varje dag
             const listItem = document.createElement('li');
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
         editingDate = dateStr;
 
         // Visa den aktuella muskelgruppen i inputfältet
-        muscleGroupInput.value = currentMuscleGroup === 'Ingen träningspass' ? '' : currentMuscleGroup;
+        muscleGroupInput.value = currentMuscleGroup === '--' ? '' : currentMuscleGroup;
     }
 
     // Spara träningspass för det valda datumet (redigerade eller dagens datum)
