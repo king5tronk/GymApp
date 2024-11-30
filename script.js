@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Hämta DOM-element
     const saveButton = document.getElementById('save-button');
     const muscleGroupInput = document.getElementById('muscle-group');
@@ -7,13 +7,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hämta data från localStorage
     let trainingData = JSON.parse(localStorage.getItem('trainingData')) || [];
 
+    // Variabel för att hålla reda på vilket datum som redigeras
+    let editingDate = null;
+
     // Uppdatera listan med de senaste 14 dagarna
     function updateTrainingList() {
         trainingList.innerHTML = '';
         const weekdays = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'];
         let currentDate = new Date();
 
-        // Lägg till de senaste 14 dagarna
         for (let i = 0; i < 14; i++) {
             let date = new Date(currentDate);
             date.setDate(currentDate.getDate() - i);
@@ -28,66 +30,57 @@ document.addEventListener('DOMContentLoaded', function() {
             const listItem = document.createElement('li');
             listItem.innerHTML = `${dayName} (${dateStr}): <span class="muscle-group">${muscleGroup}</span>`;
 
-            // Kontrollera om det är dagens datum och om så, lägg till en redigeringsknapp
-            if (i === 0) { // Om det är dagens datum
-                listItem.innerHTML += `<button class="edit-button">Redigera</button>`;
-            }
+            // Lägg till redigeringsknapp för varje dag
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Redigera';
+            editButton.className = 'edit-button';
 
-            // Lägg till listitem till träningslistan
+            listItem.appendChild(editButton);
             trainingList.appendChild(listItem);
 
-            // Lägg till eventlyssnare för att kunna redigera, endast för dagens pass
-            if (i === 0) { // Endast för dagens pass
-                const editButton = listItem.querySelector('.edit-button');
-                editButton.addEventListener('click', function() {
-                    const muscleGroupSpan = listItem.querySelector('.muscle-group');
-                    const currentMuscleGroup = muscleGroupSpan.textContent;
+            // Lägg till eventlyssnare för redigeringsknappen
+            editButton.addEventListener('click', function () {
+                handleEdit(dateStr, muscleGroup);
+            });
 
-                    // Sätt inputfältet till den nuvarande muskelgruppen
-                    muscleGroupInput.value = currentMuscleGroup;
-
-                    // Ta bort det gamla träningspasset från listan
-                    trainingData = trainingData.filter(t => t.date !== dateStr);
-
-                    // Uppdatera listan när användaren klickar på "Spara Träning"
-                    saveButton.onclick = function() {
-                        const newMuscleGroup = muscleGroupInput.value.trim();
-
-
-                        // Lägg till den nya muskelgruppen i träningsdata
-                        trainingData.push({ date: dateStr, muscleGroup: newMuscleGroup });
-                        
-                        // Begränsa listan till 14 dagar
-                        if (trainingData.length > 14) {
-                            trainingData.shift();
-                        }
-
-                        // Spara i localStorage
-                        localStorage.setItem('trainingData', JSON.stringify(trainingData));
-
-                        // Rensa inputfältet och uppdatera listan
-                        muscleGroupInput.value = '';
-                        updateTrainingList();
-                    };
-                });
-            }
-
-            // Lägg till separator (linje) för att visa veckoseparation efter söndag
-            if (dayName === 'Måndag') {
+            // Lägg till separator för veckoseparation
+            if (dayName === 'Måndag' && i !== 0) {
                 const separator = document.createElement('hr');
                 trainingList.appendChild(separator);
             }
         }
     }
 
-    // Spara träningspass
-    saveButton.addEventListener('click', function() {
+    // Hantera redigering av träningsdata
+    function handleEdit(dateStr, currentMuscleGroup) {
+        // Sätt det redigerade datumet
+        editingDate = dateStr;
+
+        // Visa den aktuella muskelgruppen i inputfältet
+        muscleGroupInput.value = currentMuscleGroup === 'Ingen träningspass' ? '' : currentMuscleGroup;
+    }
+
+    // Spara träningspass för det valda datumet (redigerade eller dagens datum)
+    saveButton.addEventListener('click', function () {
         const muscleGroup = muscleGroupInput.value.trim();
 
-        const currentDate = new Date();
-        const dateStr = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
-        trainingData.push({ date: dateStr, muscleGroup });
-        
+        if (!editingDate) {
+            // Om inget datum är redigerat, spara för dagens datum
+            const currentDate = new Date();
+            editingDate = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
+        }
+
+        // Uppdatera eller lägg till träningsdata för det valda datumet
+        const existingEntryIndex = trainingData.findIndex(t => t.date === editingDate);
+
+        if (existingEntryIndex > -1) {
+            // Uppdatera befintligt träningspass
+            trainingData[existingEntryIndex].muscleGroup = muscleGroup;
+        } else {
+            // Lägg till ett nytt träningspass
+            trainingData.push({ date: editingDate, muscleGroup });
+        }
+
         // Begränsa listan till 14 dagar
         if (trainingData.length > 14) {
             trainingData.shift();
@@ -96,10 +89,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Spara i localStorage
         localStorage.setItem('trainingData', JSON.stringify(trainingData));
 
-        // Rensa inputfältet
+        // Rensa inputfältet och uppdatera listan
         muscleGroupInput.value = '';
-
-        // Uppdatera listan
+        editingDate = null;  // Återställ redigeringsdatum
         updateTrainingList();
     });
 
